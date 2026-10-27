@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Signup | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Background watermark -->
+    <div class="watermark">
+        <img src="images/dlle-logo.png" alt="">
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar">
+
+        <div class="logo-area">
+
+            <img src="images/dlle-logo.png"
+                 alt="DLLE logo"
+                 class="nav-logo">
+
+            <div>
+                <h2>DLLE Activity Hub</h2>
+                <p>Ghanshyamdas Saraf College</p>
+            </div>
+
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back
+        </button>
+
+    </header>
+
+    <!-- Signup Page -->
+    <main class="signup-page">
+
+        <section class="signup-header">
+
+            <div class="student-badge">
+                STUDENT REGISTRATION
+            </div>
+
+            <h1>
+                Start your
+                <span>DLLE journey.</span>
+            </h1>
+
+            <p>
+                Create your student account to register for activities
+                and keep track of your DLLE hours.
+            </p>
+
+        </section>
+
+        <!-- Signup Form -->
+        <section class="signup-card">
+
+           <form id="studentSignupForm">
+
+                <!-- Full Name -->
+                <div class="form-group">
+
+                    <label for="studentName">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="studentName"
+                        name="name"
+                        placeholder="Enter your full name"
+                        required>
+
+                </div>
+
+                <!-- Student ID + Roll Number -->
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="studentId">
+                            Student ID
+                        </label>
+
+                        <input
+                            type="text"
+                            id="studentId"
+                            name="studentId"
+                            placeholder="Enter student ID"
+                            required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="rollNo">
+                            Roll Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="rollNo"
+                            name="rollNo"
+                            placeholder="Enter roll number"
+                            required>
+
+                    </div>
+
+                </div>
+
+                <!-- Academic Year -->
+                <div class="form-group">
+
+                    <label for="studentYear">
+                        Academic Year
+                    </label>
+
+                    <select
+                        id="studentYear"
+                        name="year"
+                        required>
+
+                        <option value="">
+                            Select your year
+                        </option>
+
+                        <option value="FY">
+                            FY
+                        </option>
+
+                        <option value="SY">
+                            SY
+                        </option>
+
+                        <option value="TY">
+                            TY
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label for="studentPassword">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="studentPassword"
+                        name="password"
+                        placeholder="Create a password"
+                        required>
+
+                </div>
+
+                <!-- Error message -->
+                <div
+                    id="signup-error"
+                    class="form-error"
+                    style="display:none;">
+                </div>
+
+                <!-- Submit -->
+                <button
+                    type="submit"
+                    class="signup-submit">
+
+                    Create Student Account →
+
+                </button>
+
+                <!-- Login -->
+                <p class="login-link">
+                    Already have an account?
+                    <a href="student-login.html">
+                        Login here
+                    </a>
+                </p>
+
+            </form>
+
+        </section>
+
+    </main>
+<!-- Signup Popup -->
+
+<div id="signupPopup"
+     class="registration-popup"
+     style="display:none;">
+
+    <div class="registration-popup-box">
+
+        <div class="popup-icon">
+            ✓
+        </div>
+
+        <h2 id="signupPopupTitle">
+            Account created!
+        </h2>
+
+        <p id="signupPopupMessage">
+            Your student account has been created successfully.
+        </p>
+
+        <button type="button"
+                id="signupPopupButton"
+                class="signup-submit">
+            OK
+        </button>
+
+    </div>
+
+</div>
+    <!-- JavaScript -->
+    <script>
+
+function goBack() {
+    window.location.href = "student.html";
+}
+
+
+/* Signup Popup */
+
+function showSignupPopup(title, message, buttonText, action) {
+
+    const popup =
+        document.getElementById("signupPopup");
+
+    document.getElementById("signupPopupTitle").innerText =
+        title;
+
+    document.getElementById("signupPopupMessage").innerText =
+        message;
+
+    const button =
+        document.getElementById("signupPopupButton");
+
+    button.innerText =
+        buttonText;
+
+    button.onclick = action;
+
+    popup.style.display =
+        "flex";
+}
+
+
+function closeSignupPopup() {
+
+    document.getElementById("signupPopup").style.display =
+        "none";
+}
+
+
+/* Signup */
+
+document.getElementById("studentSignupForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const form =
+            document.getElementById("studentSignupForm");
+
+        const submitButton =
+            form.querySelector(".signup-submit");
+
+        submitButton.disabled = true;
+
+        submitButton.innerText =
+            "Creating Account...";
+
+
+        const formData =
+            new URLSearchParams(
+                new FormData(form)
+            );
+
+
+        fetch("studentSignup", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded"
+            },
+
+            body: formData
+
+        })
+
+        .then(response => response.text())
+
+        .then(result => {
+
+            result = result.trim();
+
+
+            if (result === "SUCCESS") {
+
+                showSignupPopup(
+                    "Account created!",
+                    "Your student account has been created successfully.",
+                    "Go to Login →",
+                    function() {
+                        window.location.href =
+                            "student-login.html";
+                    }
+                );
+
+            }
+
+            else if (result === "ACCOUNT_EXISTS") {
+
+                submitButton.disabled = false;
+
+                submitButton.innerText =
+                    "Create Student Account →";
+
+                showSignupPopup(
+                    "Account already exists",
+                    "An account with this Student ID already exists. Please login instead.",
+                    "Login →",
+                    function() {
+                        window.location.href =
+                            "student-login.html";
+                    }
+                );
+
+            }
+
+            else {
+
+                submitButton.disabled = false;
+
+                submitButton.innerText =
+                    "Create Student Account →";
+
+                showSignupPopup(
+                    "Account could not be created",
+                    "Something went wrong. Please check your details and try again.",
+                    "OK",
+                    closeSignupPopup
+                );
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Signup error:",
+                error
+            );
+
+            submitButton.disabled = false;
+
+            submitButton.innerText =
+                "Create Student Account →";
+
+            showSignupPopup(
+                "Something went wrong",
+                "Unable to create your account. Please try again.",
+                "OK",
+                closeSignupPopup
+            );
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

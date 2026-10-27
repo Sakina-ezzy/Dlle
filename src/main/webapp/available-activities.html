@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Available Activities | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Background Watermark -->
+    <div class="watermark">
+        <img src="images/dlle-logo.png" alt="">
+    </div>
+
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo-area">
+
+            <img src="images/dlle-logo.png"
+                 alt="DLLE logo"
+                 class="nav-logo">
+
+            <div>
+                <h2>DLLE Activity Hub</h2>
+                <p>Ghanshyamdas Saraf College</p>
+            </div>
+
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Dashboard
+        </button>
+
+    </header>
+
+
+    <!-- Available Activities -->
+    <main class="activities-page">
+
+        <section class="activities-header">
+
+            <div class="student-badge">
+                AVAILABLE ACTIVITIES
+            </div>
+
+            <h1>
+                Find your next
+                <span>DLLE activity.</span>
+            </h1>
+
+            <p>
+                Explore activities, discover opportunities to contribute,
+                and register for the ones you would like to join.
+            </p>
+
+        </section>
+
+
+        <!-- Filters -->
+        <section class="activity-filters">
+
+            <div class="filter-group">
+
+                <label for="yearFilter">
+                    Academic Year
+                </label>
+
+                <select id="yearFilter">
+                    <option value="ALL">All Years</option>
+                    <option value="FY">FY</option>
+                    <option value="SY">SY</option>
+                    <option value="TY">TY</option>
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="dateFilter">
+                    Activity Date
+                </label>
+
+                <select id="dateFilter">
+                    <option value="ALL">All Activities</option>
+                    <option value="UPCOMING">Upcoming</option>
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- Activities -->
+        <section id="activitiesContainer"
+                 class="activities-container">
+
+            <div class="empty-activities">
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+                <h2>No activities available yet</h2>
+
+                <p>
+                    New DLLE activities will appear here
+                    once they are posted.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Registration Popup -->
+    <div id="registrationPopup"
+         class="registration-popup"
+         style="display:none;">
+
+        <div class="registration-popup-box">
+
+            <div class="popup-icon">
+                ✓
+            </div>
+
+            <h2 id="popupTitle">
+                Registration successful!
+            </h2>
+
+            <p id="popupMessage">
+                You have been registered for this activity.
+            </p>
+
+            <button type="button"
+                    class="signup-submit"
+                    onclick="closeRegistrationPopup()">
+                OK
+            </button>
+
+        </div>
+
+    </div>
+
+
+<script>
+
+function goBack() {
+    window.location.href = "student-dashboard.html";
+}
+
+
+let activities = [];
+
+
+/* Registration popup */
+
+function showRegistrationPopup(title, message) {
+
+    document.getElementById("popupTitle").innerText =
+        title;
+
+    document.getElementById("popupMessage").innerText =
+        message;
+
+    document.getElementById("registrationPopup").style.display =
+        "flex";
+}
+
+
+function closeRegistrationPopup() {
+
+    document.getElementById("registrationPopup").style.display =
+        "none";
+}
+
+
+/* Display activities */
+
+function displayActivities() {
+
+    const container =
+        document.getElementById("activitiesContainer");
+
+    if (activities.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-activities">
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+                <h2>No activities available yet</h2>
+
+                <p>
+                    New DLLE activities will appear here
+                    once they are posted.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    activities.forEach(activity => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "activity-card";
+
+
+        const registered =
+            activity.registered === true;
+
+
+        card.innerHTML = `
+
+            <div class="activity-top">
+
+                <span class="activity-hours">
+                    ${activity.hours} hrs
+                </span>
+
+            </div>
+
+
+            <h3>
+                ${activity.title}
+            </h3>
+
+
+            <p>
+                ${activity.description}
+            </p>
+
+
+            <div class="activity-details">
+
+                <span>
+                    📅 ${activity.date}
+                </span>
+
+            </div>
+
+
+            <button
+                class="register-btn"
+                ${registered ? "disabled" : ""}
+                onclick="registerActivity(${activity.id}, this)">
+
+                ${registered
+                    ? "✓ Registered"
+                    : "Register →"}
+
+            </button>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+}
+
+
+/* Register for activity */
+
+function registerActivity(id, button) {
+
+    if (button.disabled) {
+        return;
+    }
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Registering...";
+
+
+    fetch("registerEvent", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type":
+                "application/x-www-form-urlencoded"
+        },
+
+        body:
+            "eventId=" +
+            encodeURIComponent(id)
+
+    })
+
+    .then(response => response.text())
+
+    .then(result => {
+
+        if (
+            result.includes(
+                "Registration successful"
+            )
+        ) {
+
+            button.innerText =
+                "✓ Registered";
+
+            button.disabled = true;
+
+            showRegistrationPopup(
+                "Registration successful!",
+                "You have been registered for this activity."
+            );
+
+        }
+
+        else if (
+            result.includes(
+                "Already Registered"
+            )
+        ) {
+
+            button.innerText =
+                "✓ Registered";
+
+            button.disabled = true;
+
+            showRegistrationPopup(
+                "Already registered",
+                "You are already registered for this activity."
+            );
+
+        }
+
+        else {
+
+            button.disabled = false;
+
+            button.innerText =
+                "Register →";
+
+            showRegistrationPopup(
+                "Registration unsuccessful",
+                "Unable to register for this activity. Please try again."
+            );
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Registration error:",
+            error
+        );
+
+        button.disabled = false;
+
+        button.innerText =
+            "Register →";
+
+        showRegistrationPopup(
+            "Something went wrong",
+            "Unable to register. Please try again."
+        );
+
+    });
+
+}
+
+
+/* Load activities from MySQL */
+
+fetch("availableActivities")
+
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load activities."
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(data => {
+
+        activities = data;
+
+        displayActivities();
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Could not load activities:",
+            error
+        );
+
+        document.getElementById(
+            "activitiesContainer"
+        ).innerHTML = `
+
+            <div class="empty-activities">
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+                <h2>
+                    Unable to load activities
+                </h2>
+
+                <p>
+                    Please try again later.
+                </p>
+
+            </div>
+
+        `;
+
+    });
+
+
+/* Academic year filter */
+
+document.getElementById(
+    "yearFilter"
+).addEventListener(
+    "change",
+    applyFilters
+);
+
+
+/* Activity date filter */
+
+document.getElementById(
+    "dateFilter"
+).addEventListener(
+    "change",
+    applyFilters
+);
+
+
+function applyFilters() {
+
+    const selectedYear =
+        document.getElementById(
+            "yearFilter"
+        ).value;
+
+    const selectedDate =
+        document.getElementById(
+            "dateFilter"
+        ).value;
+
+
+    const today =
+        new Date();
+
+    today.setHours(
+        0, 0, 0, 0
+    );
+
+
+    const filtered =
+        activities.filter(activity => {
+
+            let yearMatch = true;
+
+            let dateMatch = true;
+
+
+            if (
+                selectedYear !== "ALL" &&
+                activity.year
+            ) {
+
+                yearMatch =
+                    activity.year ===
+                    selectedYear;
+
+            }
+
+
+            if (
+                selectedDate ===
+                "UPCOMING"
+            ) {
+
+                const eventDate =
+                    new Date(
+                        activity.date
+                    );
+
+                dateMatch =
+                    eventDate >= today;
+
+            }
+
+
+            return (
+                yearMatch &&
+                dateMatch
+            );
+
+        });
+
+
+    const original =
+        activities;
+
+    activities =
+        filtered;
+
+    displayActivities();
+
+    activities =
+        original;
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Archived Activities | Teacher | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goActivities()">
+        ← Activities
+    </button>
+
+</header>
+
+
+<main class="teacher-archived-page">
+
+    <section class="teacher-page-header">
+
+        <div class="student-badge">
+            TEACHER SPACE
+        </div>
+
+        <h1>Archived Activities</h1>
+
+        <p>
+            View and manage completed DLLE activities and their records.
+        </p>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <section class="teacher-archive-search">
+
+        <label for="archiveSearch">
+            Search Activities
+        </label>
+
+        <input
+            type="text"
+            id="archiveSearch"
+            placeholder="Search by activity name..."
+        >
+
+    </section>
+
+
+    <!-- ACTIVITIES -->
+
+    <section
+        id="archivedActivitiesContainer"
+        class="teacher-archived-container">
+
+        <div class="teacher-loading">
+            Loading archived activities...
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+function goActivities() {
+
+    window.location.href =
+        "teacher-activities.html";
+
+}
+
+
+/* --------------------------------
+   LOAD ARCHIVED ACTIVITIES
+-------------------------------- */
+
+function loadArchivedActivities() {
+
+    fetch("teacherArchivedActivities")
+
+        .then(function(response) {
+
+            if (response.status === 401) {
+
+                window.location.href =
+                    "teacher-login.html";
+
+                return null;
+            }
+
+            return response.json();
+
+        })
+
+        .then(function(data) {
+
+            if (!data) {
+                return;
+            }
+
+            const container =
+                document.getElementById(
+                    "archivedActivitiesContainer"
+                );
+
+
+            if (data.status !== "SUCCESS") {
+
+                container.innerHTML =
+
+                    '<div class="teacher-empty">' +
+
+                        '<h3>Unable to load activities</h3>' +
+
+                        '<p>Please try again.</p>' +
+
+                    '</div>';
+
+                return;
+            }
+
+
+            if (data.activities.length === 0) {
+
+                container.innerHTML =
+
+                    '<div class="teacher-empty">' +
+
+                        '<h3>No archived activities</h3>' +
+
+                        '<p>' +
+                            'Completed activities that you archive will appear here.' +
+                        '</p>' +
+
+                    '</div>';
+
+                return;
+            }
+
+
+            renderArchivedActivities(
+                data.activities
+            );
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Archived activities error:",
+                error
+            );
+
+            document.getElementById(
+                "archivedActivitiesContainer"
+            ).innerHTML =
+
+                '<div class="teacher-empty">' +
+
+                    '<h3>Something went wrong</h3>' +
+
+                    '<p>Unable to connect to the server.</p>' +
+
+                '</div>';
+
+        });
+
+}
+
+
+/* --------------------------------
+   RENDER ACTIVITIES
+-------------------------------- */
+
+function renderArchivedActivities(
+    activities
+) {
+
+    const container =
+        document.getElementById(
+            "archivedActivitiesContainer"
+        );
+
+    const searchText =
+        document.getElementById(
+            "archiveSearch"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const filteredActivities =
+        activities.filter(
+            function(activity) {
+
+                return activity.title
+                    .toLowerCase()
+                    .includes(searchText);
+
+            }
+        );
+
+
+    if (filteredActivities.length === 0) {
+
+        container.innerHTML =
+
+            '<div class="teacher-empty">' +
+
+                '<h3>No matching activities</h3>' +
+
+                '<p>' +
+                    'Try searching with another activity name.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    filteredActivities.forEach(
+        function(activity) {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "teacher-activity-card";
+
+
+            card.innerHTML =
+
+                '<div class="teacher-activity-top">' +
+
+                    '<div>' +
+
+                        '<span class="teacher-activity-badge">' +
+                            'ARCHIVED ACTIVITY' +
+                        '</span>' +
+
+                        '<h2>' +
+                            activity.title +
+                        '</h2>' +
+
+                    '</div>' +
+
+                    '<span class="attendance-status status-closed">' +
+                        'Completed' +
+                    '</span>' +
+
+                '</div>' +
+
+
+                '<p class="teacher-activity-description">' +
+
+                    activity.description +
+
+                '</p>' +
+
+
+                '<div class="teacher-activity-details">' +
+
+                    '<div>' +
+
+                        '<strong>Date</strong>' +
+
+                        '<span>' +
+                            activity.date +
+                        '</span>' +
+
+                    '</div>' +
+
+
+                    '<div>' +
+
+                        '<strong>Hours</strong>' +
+
+                        '<span>' +
+                            activity.hours +
+                            ' hrs' +
+                        '</span>' +
+
+                    '</div>' +
+
+
+                    '<div>' +
+
+                        '<strong>Stream</strong>' +
+
+                        '<span>' +
+                            activity.stream +
+                        '</span>' +
+
+                    '</div>' +
+
+                '</div>' +
+
+
+                '<div class="teacher-activity-buttons">' +
+
+                    '<button class="teacher-secondary-btn" ' +
+
+                        'onclick="viewRegistrations(' +
+                            activity.eventId +
+                        ')">' +
+
+                        'Registrations' +
+
+                    '</button>' +
+
+
+                    '<button class="teacher-secondary-btn" ' +
+
+                        'onclick="viewAttendance(' +
+                            activity.eventId +
+                        ')">' +
+
+                        'Attendance Records' +
+
+                    '</button>' +
+
+
+                    '<button class="teacher-attendance-btn" ' +
+
+                        'onclick="restoreActivity(' +
+                            activity.eventId +
+                        ')">' +
+
+                        'Restore Activity' +
+
+                    '</button>' +
+
+                '</div>';
+
+
+            container.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* --------------------------------
+   SEARCH
+-------------------------------- */
+
+document.getElementById(
+    "archiveSearch"
+).addEventListener(
+    "input",
+    loadArchivedActivities
+);
+
+
+/* --------------------------------
+   NAVIGATION
+-------------------------------- */
+
+function viewRegistrations(eventId) {
+
+    window.location.href =
+        "teacher-registrations.html?eventId=" +
+        encodeURIComponent(eventId);
+
+}
+
+
+function viewAttendance(eventId) {
+
+    window.location.href =
+        "teacher-attendance.html?eventId=" +
+        encodeURIComponent(eventId);
+
+}
+
+
+/* --------------------------------
+   RESTORE
+-------------------------------- */
+
+function restoreActivity(eventId) {
+
+    const confirmed =
+        confirm(
+            "Restore this activity?\n\n" +
+            "It will appear again in the active Activities list."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const formData =
+        new URLSearchParams();
+
+    formData.append(
+        "eventId",
+        eventId
+    );
+
+
+    fetch("restoreEvent", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type":
+                "application/x-www-form-urlencoded"
+        },
+
+        body: formData
+
+    })
+
+    .then(function(response) {
+
+        if (response.status === 401) {
+
+            window.location.href =
+                "teacher-login.html";
+
+            return null;
+        }
+
+        return response.text();
+
+    })
+
+    .then(function(result) {
+
+        if (!result) {
+            return;
+        }
+
+        result =
+            result.trim();
+
+
+        if (result === "SUCCESS") {
+
+            loadArchivedActivities();
+
+        } else {
+
+            alert(
+                "Unable to restore this activity."
+            );
+
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            "Restore activity error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the server."
+        );
+
+    });
+
+}
+
+
+/* --------------------------------
+   START
+-------------------------------- */
+
+loadArchivedActivities();
+
+</script>
+
+</body>
+
+</html>

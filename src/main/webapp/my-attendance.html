@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Attendance | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goBack()">
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<main class="activities-page">
+
+    <section class="activities-header">
+
+        <div class="student-badge">
+            MY ATTENDANCE
+        </div>
+
+        <h1>
+            Your attendance <span>record.</span>
+        </h1>
+
+        <p>
+            View the activities you attended and the DLLE hours you earned.
+        </p>
+
+    </section>
+
+
+    <section id="attendanceContainer">
+
+        <div class="empty-state">
+
+            <h3>Loading attendance...</h3>
+
+            <p>
+                Please wait while we load your attendance records.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+function goBack() {
+    window.location.href = "student-dashboard.html";
+}
+
+
+function loadAttendance() {
+
+    fetch("myAttendance")
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to load attendance."
+                );
+            }
+
+            return response.json();
+
+        })
+
+        .then(attendance => {
+
+            const container =
+                document.getElementById(
+                    "attendanceContainer"
+                );
+
+
+            /* No attendance yet */
+
+            if (attendance.length === 0) {
+
+                container.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <h3>No attendance records yet</h3>
+
+                        <p>
+                            Your completed activities will appear here.
+                        </p>
+
+                        <button
+                            class="signup-submit"
+                            onclick="openRegistrations()">
+
+                            View My Registrations →
+
+                        </button>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            /* Display attendance */
+
+            container.innerHTML = "";
+
+
+            attendance.forEach(activity => {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "activity-card";
+
+
+                card.innerHTML = `
+
+                    <div class="activity-top">
+
+                        <span class="activity-hours">
+                            ${activity.hours} Hours Earned
+                        </span>
+
+                        <span class="attendance-status">
+                            ATTENDED
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        ${activity.title}
+                    </h3>
+
+
+                    <p>
+                        ${activity.description}
+                    </p>
+
+
+                    <div class="activity-details">
+
+                        <span>
+                            📅 ${activity.date}
+                        </span>
+
+                        <span>
+                            🎓 ${activity.year}
+                        </span>
+
+                    </div>
+
+
+                    <div class="registration-status">
+
+                        ✓ Attendance Submitted
+
+                    </div>
+
+
+                    <div class="attendance-info">
+
+                        <div class="attendance-open">
+
+                            🕒 ${formatDateTime(
+                                activity.attendanceTime
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(card);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+
+            document.getElementById(
+                "attendanceContainer"
+            ).innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        Unable to load attendance
+                    </h3>
+
+                    <p>
+                        Please try again later.
+                    </p>
+
+                </div>
+
+            `;
+
+        });
+
+}
+
+
+function formatDateTime(dateTime) {
+
+    if (!dateTime) {
+        return "Attendance recorded";
+    }
+
+    const date =
+        new Date(
+            dateTime.replace(" ", "T")
+        );
+
+
+    if (isNaN(date.getTime())) {
+        return "Attendance recorded";
+    }
+
+
+    return date.toLocaleString(
+        "en-IN",
+        {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }
+    );
+
+}
+
+
+function openRegistrations() {
+
+    window.location.href =
+        "my-registrations.html";
+
+}
+
+
+loadAttendance();
+
+</script>
+
+</body>
+
+</html>

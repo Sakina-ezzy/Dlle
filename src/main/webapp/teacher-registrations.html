@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registration Records | Teacher | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goDashboard()">
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<main class="teacher-records-page">
+
+    <section class="teacher-page-header">
+
+        <div class="student-badge">
+            TEACHER SPACE
+        </div>
+
+        <h1>Registration Records</h1>
+
+        <p>
+            View students registered for each DLLE activity.
+        </p>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <section class="teacher-record-filters">
+
+        <div class="teacher-filter-group">
+
+            <label for="activityFilter">
+                Activity
+            </label>
+
+            <select id="activityFilter">
+
+                <option value="">
+                    Select Activity
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="teacher-filter-group">
+
+            <label for="yearFilter">
+                Academic Year
+            </label>
+
+            <select id="yearFilter">
+
+                <option value="ALL">
+                    All Years
+                </option>
+
+                <option value="FY">
+                    FY
+                </option>
+
+                <option value="SY">
+                    SY
+                </option>
+
+                <option value="TY">
+                    TY
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- TOTAL REGISTERED -->
+
+        <div class="teacher-inline-stat">
+
+            <span id="registrationCount">
+                0
+            </span>
+
+            <p>
+                Total Registered
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- TABLE -->
+
+    <section class="teacher-record-table-section">
+
+        <div id="registrationTableContainer">
+
+            <div class="teacher-empty">
+
+                <h3>
+                    Select an activity
+                </h3>
+
+                <p>
+                    Choose an activity above to view its registration records.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+function goDashboard() {
+
+    window.location.href =
+        "teacher-dashboard.html";
+
+}
+
+
+/* --------------------------------
+   LOAD ACTIVITIES
+-------------------------------- */
+
+function loadActivities() {
+
+    fetch("teacherActivities")
+
+        .then(function(response) {
+
+            if (response.status === 401) {
+
+                window.location.href =
+                    "teacher-login.html";
+
+                return null;
+            }
+
+            return response.json();
+
+        })
+
+        .then(function(data) {
+
+            if (!data) {
+                return;
+            }
+
+            if (data.status !== "SUCCESS") {
+                return;
+            }
+
+            const activityFilter =
+                document.getElementById(
+                    "activityFilter"
+                );
+
+            activityFilter.innerHTML =
+                '<option value="">Select Activity</option>';
+
+            data.activities.forEach(
+                function(activity) {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value =
+                        activity.eventId;
+
+                    option.textContent =
+                        activity.title;
+
+                    activityFilter.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            /*
+             * If this page was opened from
+             * the Activities page, use the
+             * eventId from the URL.
+             */
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            const eventId =
+                params.get("eventId");
+
+            if (eventId) {
+
+                activityFilter.value =
+                    eventId;
+
+                loadRegistrations();
+
+            }
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Activities loading error:",
+                error
+            );
+
+        });
+
+}
+
+
+/* --------------------------------
+   LOAD REGISTRATIONS
+-------------------------------- */
+
+function loadRegistrations() {
+
+    const eventId =
+        document.getElementById(
+            "activityFilter"
+        ).value;
+
+    const year =
+        document.getElementById(
+            "yearFilter"
+        ).value;
+
+
+    const container =
+        document.getElementById(
+            "registrationTableContainer"
+        );
+
+
+    const count =
+        document.getElementById(
+            "registrationCount"
+        );
+
+
+    if (!eventId) {
+
+        count.innerText =
+            "0";
+
+        container.innerHTML =
+
+            '<div class="teacher-empty">' +
+
+                '<h3>Select an activity</h3>' +
+
+                '<p>' +
+                    'Choose an activity above to view its registration records.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    container.innerHTML =
+
+        '<div class="teacher-loading">' +
+            'Loading registration records...' +
+        '</div>';
+
+
+    const url =
+        "teacherRegistrations" +
+        "?eventId=" +
+        encodeURIComponent(eventId) +
+        "&year=" +
+        encodeURIComponent(year);
+
+
+    fetch(url)
+
+        .then(function(response) {
+
+            if (response.status === 401) {
+
+                window.location.href =
+                    "teacher-login.html";
+
+                return null;
+            }
+
+            return response.json();
+
+        })
+
+        .then(function(data) {
+
+            if (!data) {
+                return;
+            }
+
+
+            if (data.status !== "SUCCESS") {
+
+                count.innerText =
+                    "0";
+
+                container.innerHTML =
+
+                    '<div class="teacher-empty">' +
+
+                        '<h3>Unable to load records</h3>' +
+
+                        '<p>Please try again.</p>' +
+
+                    '</div>';
+
+                return;
+            }
+
+
+            count.innerText =
+                data.total;
+
+
+            if (data.registrations.length === 0) {
+
+                container.innerHTML =
+
+                    '<div class="teacher-empty">' +
+
+                        '<h3>No registrations found</h3>' +
+
+                        '<p>' +
+                            'No students are registered for this activity with the selected filter.' +
+                        '</p>' +
+
+                    '</div>';
+
+                return;
+            }
+
+
+            let tableHTML =
+
+                '<div class="teacher-table-wrapper">' +
+
+                    '<table class="teacher-record-table">' +
+
+                        '<thead>' +
+
+                            '<tr>' +
+
+                                '<th>Student Name</th>' +
+
+                                '<th>Student ID</th>' +
+
+                                '<th>Stream</th>' +
+
+                                '<th>Year</th>' +
+
+                                '<th>Registration Date</th>' +
+
+                            '</tr>' +
+
+                        '</thead>' +
+
+                        '<tbody>';
+
+
+            data.registrations.forEach(
+                function(student) {
+
+                    tableHTML +=
+
+                        '<tr>' +
+
+                            '<td>' +
+                                student.studentName +
+                            '</td>' +
+
+                            '<td>' +
+                                student.studentId +
+                            '</td>' +
+
+                            '<td>' +
+                                student.stream +
+                            '</td>' +
+
+                            '<td>' +
+                                student.year +
+                            '</td>' +
+
+                            '<td>' +
+                                student.registrationDate +
+                            '</td>' +
+
+                        '</tr>';
+
+                }
+            );
+
+
+            tableHTML +=
+
+                        '</tbody>' +
+
+                    '</table>' +
+
+                '</div>';
+
+
+            container.innerHTML =
+                tableHTML;
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Registration loading error:",
+                error
+            );
+
+            container.innerHTML =
+
+                '<div class="teacher-empty">' +
+
+                    '<h3>Something went wrong</h3>' +
+
+                    '<p>Unable to connect to the server.</p>' +
+
+                '</div>';
+
+        });
+
+}
+
+
+/* --------------------------------
+   FILTER EVENTS
+-------------------------------- */
+
+document.getElementById(
+    "activityFilter"
+).addEventListener(
+    "change",
+    loadRegistrations
+);
+
+
+document.getElementById(
+    "yearFilter"
+).addEventListener(
+    "change",
+    loadRegistrations
+);
+
+
+/* --------------------------------
+   START
+-------------------------------- */
+
+loadActivities();
+
+</script>
+
+</body>
+
+</html>

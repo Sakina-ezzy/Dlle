@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teacher Login | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+<header class="navbar">
+
+    <div class="logo-area">
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">
+        ← Back
+    </button>
+
+</header>
+
+
+<main class="auth-page">
+
+    <section class="auth-card">
+
+        <div class="auth-logo-wrapper">
+            <img src="images/dlle-logo.png"
+                 alt="DLLE logo"
+                 class="auth-logo">
+        </div>
+
+        <div class="student-badge">
+            TEACHER ACCESS
+        </div>
+
+        <h1>Welcome back.</h1>
+
+        <p class="auth-subtitle">
+            Login to manage DLLE activities, registrations and attendance.
+        </p>
+
+
+        <form id="teacherLoginForm">
+
+            <div class="form-group">
+
+                <label for="teacherUsername">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="teacherUsername"
+                    name="username"
+                    placeholder="Enter teacher username"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="teacherPassword">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="teacherPassword"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <div id="teacherLoginError"
+                 class="form-error"
+                 style="display:none;">
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-submit"
+                id="teacherLoginButton">
+
+                Login to Teacher Space →
+
+            </button>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<!-- LOGIN POPUP -->
+
+<div id="teacherLoginPopup"
+     class="registration-popup"
+     style="display:none;">
+
+    <div class="registration-popup-box">
+
+        <div class="popup-icon"
+             id="teacherPopupIcon">
+            ✓
+        </div>
+
+        <h2 id="teacherPopupTitle">
+            Login successful!
+        </h2>
+
+        <p id="teacherPopupMessage">
+            Welcome to the teacher dashboard.
+        </p>
+
+        <button
+            type="button"
+            class="signup-submit"
+            id="teacherPopupButton">
+
+            Continue →
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function goBack() {
+    window.location.href = "index.html";
+}
+
+
+/* ---------------- POPUP ---------------- */
+
+function showTeacherPopup(title, message, buttonText, action) {
+
+    const popup =
+        document.getElementById("teacherLoginPopup");
+
+    document.getElementById("teacherPopupTitle")
+        .innerText = title;
+
+    document.getElementById("teacherPopupMessage")
+        .innerText = message;
+
+    const button =
+        document.getElementById("teacherPopupButton");
+
+    button.innerText = buttonText;
+
+    button.onclick = action;
+
+    popup.style.display = "flex";
+}
+
+
+function closeTeacherPopup() {
+
+    document.getElementById("teacherLoginPopup")
+        .style.display = "none";
+}
+
+
+/* ---------------- LOGIN ---------------- */
+
+document
+    .getElementById("teacherLoginForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const form = this;
+
+        const username =
+            document.getElementById("teacherUsername")
+                .value.trim();
+
+        const password =
+            document.getElementById("teacherPassword")
+                .value;
+
+        const button =
+            document.getElementById("teacherLoginButton");
+
+        const error =
+            document.getElementById("teacherLoginError");
+
+
+        error.style.display = "none";
+
+
+        /* Empty-field validation */
+
+        if (username === "" || password === "") {
+
+            error.innerText =
+                "Please enter your username and password.";
+
+            error.style.display = "block";
+
+            return;
+        }
+
+
+        button.disabled = true;
+
+        button.innerText = "Logging in...";
+
+
+        const formData =
+            new URLSearchParams(new FormData(form));
+
+
+        fetch("teacherLogin", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded"
+            },
+
+            body: formData
+
+        })
+
+        .then(response => response.text())
+
+        .then(result => {
+
+            result = result.trim();
+
+
+            if (result === "SUCCESS") {
+
+                showTeacherPopup(
+                    "Login successful!",
+                    "Welcome to the DLLE teacher dashboard.",
+                    "Continue →",
+                    function() {
+
+                        window.location.href =
+                            "teacher-dashboard.html";
+
+                    }
+                );
+
+            }
+
+            else if (result === "INVALID") {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "Login to Teacher Space →";
+
+                showTeacherPopup(
+                    "Login failed",
+                    "Incorrect username or password. Please try again.",
+                    "Try Again",
+                    closeTeacherPopup
+                );
+
+            }
+
+            else {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "Login to Teacher Space →";
+
+                showTeacherPopup(
+                    "Something went wrong",
+                    "We could not complete your login. Please try again.",
+                    "OK",
+                    closeTeacherPopup
+                );
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error("Teacher login error:", error);
+
+            button.disabled = false;
+
+            button.innerText =
+                "Login to Teacher Space →";
+
+            showTeacherPopup(
+                "Connection error",
+                "Unable to connect to the server. Please try again.",
+                "OK",
+                closeTeacherPopup
+            );
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

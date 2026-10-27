@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Activities | Teacher | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goDashboard()">
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="teacher-activities">
+
+    <section class="teacher-page-header">
+
+        <div class="student-badge">
+            TEACHER SPACE
+        </div>
+
+        <h1>Activities</h1>
+
+        <p>
+            View and manage DLLE activities created for students.
+        </p>
+
+    </section>
+
+
+    <!-- ================= ACTION BAR ================= -->
+
+    <section class="teacher-activity-actions">
+
+    <button class="teacher-primary-btn"
+            onclick="createActivity()">
+
+        + Create Activity
+
+    </button>
+
+    <button class="teacher-secondary-btn"
+            onclick="openArchivedActivities()">
+
+        Archived Activities
+
+    </button>
+
+</section>
+
+
+    <!-- ================= ACTIVITY CONTAINER ================= -->
+
+    <section id="activitiesContainer"
+             class="teacher-activities-container">
+
+        <div class="teacher-loading">
+            Loading activities...
+        </div>
+
+    </section>
+<!-- ================= CREATE ACTIVITY POPUP ================= -->
+
+<div id="createActivityPopup"
+     class="teacher-popup"
+     style="display:none;">
+
+    <div class="teacher-popup-box">
+
+        <button type="button"
+                class="teacher-popup-close"
+                onclick="closeCreateActivity()">
+            ×
+        </button>
+
+        <div class="student-badge">
+            CREATE ACTIVITY
+        </div>
+
+        <h2>Create DLLE Activity</h2>
+
+        <p class="teacher-popup-subtitle">
+            Enter the activity details below.
+        </p>
+
+
+        <form id="createActivityForm">
+
+
+            <div class="teacher-form-group">
+
+                <label for="teacherName">
+                    Teacher Name
+                </label>
+
+                <input type="text"
+                       id="teacherName"
+                       name="teacherName"
+                       placeholder="Enter teacher name"
+                       required>
+
+            </div>
+
+
+            <div class="teacher-form-group">
+
+                <label for="activityTitle">
+                    Activity Title
+                </label>
+
+                <input type="text"
+                       id="activityTitle"
+                       name="title"
+                       placeholder="Enter activity title"
+                       required>
+
+            </div>
+
+
+            <div class="teacher-form-group">
+
+                <label for="activityDescription">
+                    Description
+                </label>
+
+                <textarea id="activityDescription"
+                          name="description"
+                          placeholder="Describe the activity"
+                          rows="4"></textarea>
+
+            </div>
+
+
+            <div class="teacher-form-row">
+
+                <div class="teacher-form-group">
+
+                    <label for="eventDate">
+                        Activity Date
+                    </label>
+
+                    <input type="date"
+                           id="eventDate"
+                           name="eventDate"
+                           required>
+
+                </div>
+
+
+                <div class="teacher-form-group">
+
+                    <label for="activityHours">
+                        DLLE Hours
+                    </label>
+
+                    <input type="number"
+                           id="activityHours"
+                           name="hours"
+                           min="1"
+                           placeholder="Hours"
+                           required>
+
+                </div>
+
+            </div>
+
+
+            <div id="createActivityError"
+                 class="teacher-form-error"
+                 style="display:none;">
+            </div>
+
+
+            <button type="submit"
+                    class="teacher-primary-btn teacher-form-submit">
+
+                Create Activity
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+</main>
+
+
+<script>
+function openArchivedActivities() {
+
+    window.location.href =
+        "teacher-archived-activities.html";
+
+}
+/* ================= NAVIGATION ================= */
+
+function goDashboard() {
+
+    window.location.href =
+        "teacher-dashboard.html";
+
+}
+
+
+/* ================= CREATE ACTIVITY ================= */
+
+function createActivity() {
+
+    document.getElementById(
+        "createActivityPopup"
+    ).style.display = "flex";
+
+}
+function closeCreateActivity() {
+
+    document.getElementById(
+        "createActivityPopup"
+    ).style.display = "none";
+
+    document.getElementById(
+        "createActivityForm"
+    ).reset();
+
+    document.getElementById(
+        "createActivityError"
+    ).style.display = "none";
+
+}
+document.getElementById(
+    "createActivityForm"
+).addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        const form =
+            document.getElementById(
+                "createActivityForm"
+            );
+
+
+        const submitButton =
+            form.querySelector(
+                ".teacher-form-submit"
+            );
+
+
+        const errorBox =
+            document.getElementById(
+                "createActivityError"
+            );
+
+
+        errorBox.style.display = "none";
+
+
+        submitButton.disabled = true;
+
+        submitButton.innerText =
+            "Creating Activity...";
+
+
+        const formData =
+            new URLSearchParams(
+                new FormData(form)
+            );
+
+
+        fetch("createEvent", {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "application/x-www-form-urlencoded"
+
+            },
+
+            body: formData
+
+        })
+
+        .then(function(response) {
+
+            if (response.status === 401) {
+
+                window.location.href =
+                    "teacher-login.html";
+
+                return null;
+            }
+
+            return response.text();
+
+        })
+
+        .then(function(result) {
+
+            if (!result) {
+                return;
+            }
+
+
+            result =
+                result.trim();
+
+
+            if (result === "SUCCESS") {
+
+                closeCreateActivity();
+
+                loadActivities();
+
+            }
+
+            else if (result === "INVALID") {
+
+                errorBox.innerText =
+                    "Please enter all required details correctly.";
+
+                errorBox.style.display =
+                    "block";
+
+                submitButton.disabled =
+                    false;
+
+                submitButton.innerText =
+                    "Create Activity";
+
+            }
+
+            else {
+
+                errorBox.innerText =
+                    "Unable to create the activity. Please try again.";
+
+                errorBox.style.display =
+                    "block";
+
+                submitButton.disabled =
+                    false;
+
+                submitButton.innerText =
+                    "Create Activity";
+
+            }
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Create activity error:",
+                error
+            );
+
+
+            errorBox.innerText =
+                "Unable to connect to the server.";
+
+            errorBox.style.display =
+                "block";
+
+
+            submitButton.disabled =
+                false;
+
+            submitButton.innerText =
+                "Create Activity";
+
+        });
+
+    }
+);
+
+/* ================= LOAD ACTIVITIES ================= */
+
+function loadActivities() {
+
+    fetch("teacherActivities")
+
+        .then(function(response) {
+
+            if (response.status === 401) {
+
+                window.location.href =
+                    "teacher-login.html";
+
+                return null;
+            }
+
+            return response.json();
+
+        })
+
+        .then(function(data) {
+
+            if (!data) {
+                return;
+            }
+
+            const container =
+                document.getElementById(
+                    "activitiesContainer"
+                );
+
+
+            if (data.status !== "SUCCESS") {
+
+                container.innerHTML =
+                    '<div class="teacher-empty">' +
+                    'Unable to load activities.' +
+                    '</div>';
+
+                return;
+            }
+
+
+            if (data.activities.length === 0) {
+
+                container.innerHTML =
+                    '<div class="teacher-empty">' +
+                    '<h3>No activities yet</h3>' +
+                    '<p>Create your first DLLE activity to get started.</p>' +
+                    '</div>';
+
+                return;
+            }
+
+
+            container.innerHTML = "";
+
+
+            data.activities.forEach(
+                function(activity) {
+
+                    const card =
+                        document.createElement("div");
+
+                    card.className =
+                        "teacher-activity-card";
+
+
+                    /* ================= STATUS ================= */
+
+                    const statusClass =
+                        activity.attendanceStatus === "OPEN"
+                        ? "status-open"
+                        : "status-closed";
+
+
+                    const statusText =
+                        activity.attendanceStatus === "OPEN"
+                        ? "Attendance Open"
+                        : "Attendance Closed";
+
+
+                    const attendanceButtonText =
+                        activity.attendanceStatus === "OPEN"
+                        ? "Close Attendance"
+                        : "Open Attendance";
+
+
+                    /* ================= CARD ================= */
+
+                    card.innerHTML =
+
+                        '<div class="teacher-activity-top">' +
+
+                            '<div>' +
+
+                                '<span class="teacher-activity-badge">' +
+                                    'DLLE ACTIVITY' +
+                                '</span>' +
+
+                                '<h2>' +
+                                    activity.title +
+                                '</h2>' +
+
+                            '</div>' +
+
+                            '<span class="attendance-status ' +
+                                statusClass + '">' +
+
+                                statusText +
+
+                            '</span>' +
+
+                        '</div>' +
+
+
+                        '<p class="teacher-activity-description">' +
+
+                            activity.description +
+
+                        '</p>' +
+
+
+                        '<div class="teacher-activity-details">' +
+
+                            '<div>' +
+
+                                '<strong>Date</strong>' +
+
+                                '<span>' +
+                                    activity.date +
+                                '</span>' +
+
+                            '</div>' +
+
+
+                            '<div>' +
+
+                                '<strong>Hours</strong>' +
+
+                                '<span>' +
+                                    activity.hours +
+                                    ' hrs' +
+                                '</span>' +
+
+                            '</div>' +
+
+
+                            '<div>' +
+
+                                '<strong>Stream</strong>' +
+
+                                '<span>' +
+                                    activity.stream +
+                                '</span>' +
+
+                            '</div>' +
+
+                        '</div>' +
+
+
+                        '<div class="teacher-activity-buttons">' +
+
+
+                            '<button class="teacher-secondary-btn" ' +
+
+                                'onclick="viewRegistrations(' +
+                                    activity.eventId +
+                                ')">' +
+
+                                'Registrations' +
+
+                            '</button>' +
+
+
+                            '<button class="teacher-secondary-btn" ' +
+
+                                'onclick="viewAttendance(' +
+                                    activity.eventId +
+                                ')">' +
+
+                                'Attendance Records' +
+
+                            '</button>' +
+
+
+                            '<button class="teacher-attendance-btn" ' +
+
+                                'onclick="toggleAttendance(' +
+                                    activity.eventId +
+                                    ', \'' +
+                                    activity.attendanceStatus +
+                                '\')">' +
+
+                                attendanceButtonText +
+
+                            '</button>' +
+                            '<button class="teacher-archive-btn" ' +
+
+    'onclick="archiveActivity(' +
+        activity.eventId +
+    ')">' +
+
+    'Archive Activity' +
+
+'</button>' +
+
+
+                        '</div>';
+
+
+                    container.appendChild(card);
+
+                }
+            );
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Teacher activities error:",
+                error
+            );
+
+
+            document.getElementById(
+                "activitiesContainer"
+            ).innerHTML =
+
+                '<div class="teacher-empty">' +
+
+                    '<h3>Something went wrong</h3>' +
+
+                    '<p>Unable to connect to the server.</p>' +
+
+                '</div>';
+
+        });
+
+}
+
+
+/* ================= REGISTRATION RECORDS ================= */
+
+function viewRegistrations(eventId) {
+
+    window.location.href =
+        "teacher-registrations.html?eventId=" +
+        encodeURIComponent(eventId);
+
+}
+
+
+/* ================= ATTENDANCE RECORDS ================= */
+
+function viewAttendance(eventId) {
+
+    window.location.href =
+        "teacher-attendance.html?eventId=" +
+        encodeURIComponent(eventId);
+
+}
+
+
+/* ================= OPEN / CLOSE ATTENDANCE ================= */
+
+function toggleAttendance(eventId, currentStatus) {
+
+    const newStatus =
+        currentStatus === "OPEN"
+        ? "CLOSED"
+        : "OPEN";
+
+
+    const formData =
+        new URLSearchParams();
+
+
+    formData.append(
+        "eventId",
+        eventId
+    );
+
+
+    formData.append(
+        "status",
+        newStatus
+    );
+
+
+    fetch("toggleAttendance", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type":
+                "application/x-www-form-urlencoded"
+
+        },
+
+        body: formData
+
+    })
+
+    .then(function(response) {
+
+        if (response.status === 401) {
+
+            window.location.href =
+                "teacher-login.html";
+
+            return null;
+        }
+
+        return response.text();
+
+    })
+
+    .then(function(result) {
+
+        if (!result) {
+            return;
+        }
+
+
+        result =
+            result.trim();
+
+
+        if (result === "SUCCESS") {
+
+            loadActivities();
+
+        } else {
+
+            alert(
+                "Unable to update attendance."
+            );
+
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            "Attendance toggle error:",
+            error
+        );
+
+
+        alert(
+            "Unable to connect to the server."
+        );
+
+    });
+
+}
+
+function archiveActivity(eventId) {
+
+    const confirmed =
+        confirm(
+            "Archive this activity?\n\n" +
+            "The activity and all its registration and attendance records will be kept safely, " +
+            "but it will no longer appear in the active activities list."
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const formData =
+        new URLSearchParams();
+
+    formData.append(
+        "eventId",
+        eventId
+    );
+
+
+    fetch("archiveEvent", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type":
+                "application/x-www-form-urlencoded"
+        },
+
+        body: formData
+
+    })
+
+    .then(function(response) {
+
+        if (response.status === 401) {
+
+            window.location.href =
+                "teacher-login.html";
+
+            return null;
+        }
+
+        return response.text();
+
+    })
+
+    .then(function(result) {
+
+        if (!result) {
+            return;
+        }
+
+        result =
+            result.trim();
+
+
+        if (result === "SUCCESS") {
+
+            loadActivities();
+
+        } else {
+
+            alert(
+                "Unable to archive this activity."
+            );
+
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            "Archive activity error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the server."
+        );
+
+    });
+
+}
+/* ================= INITIAL LOAD ================= */
+
+loadActivities();
+
+</script>
+
+</body>
+
+</html>

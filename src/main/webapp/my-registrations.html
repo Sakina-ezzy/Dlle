@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Registrations | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn"
+            onclick="goBack()">
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<main class="activities-page">
+
+    <section class="activities-header">
+
+        <div class="student-badge">
+            MY REGISTRATIONS
+        </div>
+
+        <h1>Your registered <span>activities.</span></h1>
+
+        <p>
+            Keep track of the DLLE activities you have registered for
+            and check your attendance status.
+        </p>
+
+    </section>
+
+
+    <section id="registrationsContainer">
+
+        <div class="empty-state">
+
+            <h3>No registrations yet</h3>
+
+            <p>
+                Activities you register for will appear here.
+            </p>
+
+            <button class="signup-submit"
+                    onclick="openActivities()">
+                Browse Activities →
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+function goBack() {
+    window.location.href = "student-dashboard.html";
+}
+
+function openActivities() {
+    window.location.href = "available-activities.html";
+}
+function submitAttendance(eventId) {
+    window.location.href = "attendance.html?eventId=" + eventId;
+}
+
+function loadRegistrations() {
+
+    fetch("myRegistrations")
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Unable to load registrations.");
+            }
+
+            return response.json();
+        })
+        .then(registrations => {
+
+            const container =
+                document.getElementById("registrationsContainer");
+
+            if (registrations.length === 0) {
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No registrations yet</h3>
+                        <p>
+                            Activities you register for will appear here.
+                        </p>
+                        <button class="signup-submit"
+                                onclick="openActivities()">
+                            Browse Activities →
+                        </button>
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML = "";
+
+            registrations.forEach(activity => {
+
+                const card = document.createElement("div");
+
+                card.className = "activity-card";
+
+                card.innerHTML = `
+                    <div class="activity-top">
+                        <span class="activity-hours">
+                            ${activity.hours} Hours
+                        </span>
+
+                        <span class="attendance-status">
+                            ${activity.attendanceStatus}
+                        </span>
+                    </div>
+
+                    <h3>${activity.title}</h3>
+
+                    <p>${activity.description}</p>
+
+                    <div class="activity-details">
+                        <span>📅 ${activity.date}</span>
+                    </div>
+
+                    <div class="registration-status">
+    ✓ Registered
+</div>
+
+<div class="attendance-info">
+    ${
+        activity.attendanceSubmitted === true
+        ? `
+            <div class="attendance-submitted">
+                ✅ Attendance Submitted
+            </div>
+
+            <div class="attendance-time">
+                Submitted on: ${activity.attendanceTime}
+            </div>
+        `
+        : activity.attendanceStatus === "OPEN"
+        ? `
+            <div class="attendance-open">
+                🟢 Attendance is open
+            </div>
+
+            <button class="attendance-submit"
+                    onclick="submitAttendance(${activity.eventId})">
+                Submit Attendance →
+            </button>
+        `
+        : `
+            <div class="attendance-closed">
+                🔒 Attendance is closed
+            </div>
+        `
+    }
+</div>
+                `;
+
+                container.appendChild(card);
+            });
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            document.getElementById("registrationsContainer").innerHTML = `
+                <div class="empty-state">
+                    <h3>Unable to load registrations</h3>
+                    <p>Please try again later.</p>
+                </div>
+            `;
+        });
+}
+
+loadRegistrations();
+
+</script>
+
+</body>
+</html>

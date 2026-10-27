@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teacher Dashboard | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="logoutTeacher()">
+        Logout
+    </button>
+
+</header>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<main class="teacher-dashboard">
+
+    <section class="teacher-dashboard-header">
+
+        <div class="student-badge">
+            TEACHER SPACE
+        </div>
+
+        <h1>Teacher Dashboard</h1>
+
+        <p>
+            Manage DLLE activities, registrations and attendance
+            from one place.
+        </p>
+
+    </section>
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="teacher-stats">
+
+        <div class="teacher-stat-card">
+
+            <div class="teacher-stat-number" id="totalEvents">
+                0
+            </div>
+
+            <div class="teacher-stat-label">
+                Total Activities
+            </div>
+
+        </div>
+
+
+        <div class="teacher-stat-card">
+
+            <div class="teacher-stat-number" id="totalRegistrations">
+                0
+            </div>
+
+            <div class="teacher-stat-label">
+                Registrations
+            </div>
+
+        </div>
+
+
+        <div class="teacher-stat-card">
+
+            <div class="teacher-stat-number" id="totalAttendance">
+                0
+            </div>
+
+            <div class="teacher-stat-label">
+                Attendance
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= DASHBOARD OPTIONS ================= -->
+
+    <section class="teacher-options">
+
+        <div class="teacher-option-card"
+             onclick="openActivities()">
+
+            <div class="teacher-option-icon">
+                📋
+            </div>
+
+            <div>
+
+                <h3>Activities</h3>
+
+                <p>
+                    Create and manage DLLE activities.
+                </p>
+
+            </div>
+
+            <div class="teacher-option-arrow">
+                →
+            </div>
+
+        </div>
+
+
+        <div class="teacher-option-card"
+             onclick="openRegistrations()">
+
+            <div class="teacher-option-icon">
+                👥
+            </div>
+
+            <div>
+
+                <h3>Registration Records</h3>
+
+                <p>
+                    View students registered for activities.
+                </p>
+
+            </div>
+
+            <div class="teacher-option-arrow">
+                →
+            </div>
+
+        </div>
+
+
+        <div class="teacher-option-card"
+             onclick="openAttendance()">
+
+            <div class="teacher-option-icon">
+                📷
+            </div>
+
+            <div>
+
+                <h3>Attendance Records</h3>
+
+                <p>
+                    View attendance and submitted photos.
+                </p>
+
+            </div>
+
+            <div class="teacher-option-arrow">
+                →
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+/* ================= NAVIGATION ================= */
+
+function openActivities() {
+
+    window.location.href = "teacher-activities.html";
+
+}
+
+
+function openRegistrations() {
+
+    window.location.href = "teacher-registrations.html";
+
+}
+
+
+function openAttendance() {
+
+    window.location.href = "teacher-attendance.html";
+
+}
+
+
+/* ================= LOGOUT ================= */
+
+function logoutTeacher() {
+
+    fetch("teacherLogout")
+        .then(function() {
+
+            window.location.href = "index.html";
+
+        })
+        .catch(function() {
+
+            window.location.href = "index.html";
+
+        });
+
+}
+function loadTeacherStats() {
+
+    fetch("teacherDashboardStats")
+
+        .then(function(response) {
+
+            if (response.status === 401) {
+                window.location.href = "teacher-login.html";
+                return null;
+            }
+
+            return response.json();
+        })
+
+        .then(function(data) {
+
+            if (!data) {
+                return;
+            }
+
+            if (data.status === "SUCCESS") {
+
+                document.getElementById("totalEvents")
+                    .innerText = data.totalEvents;
+
+                document.getElementById("totalRegistrations")
+                    .innerText = data.totalRegistrations;
+
+                document.getElementById("totalAttendance")
+                    .innerText = data.totalAttendance;
+            }
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Teacher dashboard stats error:",
+                error
+            );
+
+        });
+}
+
+
+loadTeacherStats();
+</script>
+
+</body>
+
+</html>

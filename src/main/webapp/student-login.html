@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Login | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Background watermark -->
+    <div class="watermark">
+        <img src="images/dlle-logo.png" alt="">
+    </div>
+
+
+    <!-- Navbar -->
+    <header class="navbar">
+
+        <div class="logo-area">
+
+            <img src="images/dlle-logo.png"
+                 alt="DLLE logo"
+                 class="nav-logo">
+
+            <div>
+                <h2>DLLE Activity Hub</h2>
+                <p>Ghanshyamdas Saraf College</p>
+            </div>
+
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back
+        </button>
+
+    </header>
+
+
+    <!-- Login Page -->
+    <main class="login-page">
+
+        <section class="login-header">
+
+            <div class="student-badge">
+                STUDENT LOGIN
+            </div>
+
+            <h1>
+                Welcome
+                <span>back.</span>
+            </h1>
+
+            <p>
+                Login to continue your DLLE journey,
+                register for activities and track your hours.
+            </p>
+
+        </section>
+
+
+        <!-- Login Card -->
+        <section class="login-card">
+
+            <form id="studentLoginForm"
+                  action="studentLogin"
+                  method="post">
+
+
+                <!-- Student ID -->
+                <div class="form-group">
+
+                    <label for="studentId">
+                        Student ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="studentId"
+                        name="studentId"
+                        placeholder="Enter your student ID"
+                        required>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label for="studentPassword">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="studentPassword"
+                        name="password"
+                        placeholder="Enter your password"
+                        required>
+
+                </div>
+
+
+                <!-- Error -->
+                <div
+                    id="login-error"
+                    class="form-error"
+                    style="display:none;">
+                </div>
+
+
+                <!-- Login Button -->
+                <button
+                    type="submit"
+                    class="login-submit">
+
+                    Login to Student Space →
+
+                </button>
+
+
+                <!-- Signup -->
+                <p class="signup-link">
+                    Don't have an account?
+                    <a href="student-signup.html">
+                        Create one
+                    </a>
+                </p>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        function goBack() {
+            window.location.href = "student.html";
+        }
+
+    </script>
+
+</body>
+</html>

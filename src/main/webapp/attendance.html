@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goBack()">
+        ← My Registrations
+    </button>
+
+</header>
+
+
+<main class="attendance-page">
+
+    <section class="attendance-header">
+
+        <div class="student-badge">
+            ATTENDANCE
+        </div>
+
+        <h1>
+            Submit your <span>attendance.</span>
+        </h1>
+
+        <p>
+            Take a live photo as proof of your participation in this activity.
+        </p>
+
+    </section>
+
+
+    <section class="attendance-card">
+
+        <div class="attendance-icon">
+            📸
+        </div>
+
+        <h2>Live Attendance Proof</h2>
+
+        <p class="attendance-note">
+            Your camera will open to capture a live photo.
+        </p>
+
+
+        <!-- =========================
+             CAMERA AREA
+             ========================= -->
+
+        <div class="camera-container">
+
+            <video id="cameraPreview"
+                   autoplay
+                   playsinline>
+            </video>
+
+            <canvas id="photoCanvas"></canvas>
+
+        </div>
+
+
+        <!-- =========================
+             OPEN CAMERA
+             ========================= -->
+
+        <button type="button"
+                id="startCameraBtn"
+                class="attendance-submit-main">
+
+            📷 Open Camera
+
+        </button>
+
+
+        <!-- =========================
+             TAKE PHOTO
+             ========================= -->
+
+        <button type="button"
+                id="takePhotoBtn"
+                class="attendance-submit-main"
+                style="display:none;">
+
+            📸 Take Photo
+
+        </button>
+
+
+        <!-- =========================
+             PHOTO PREVIEW
+             ========================= -->
+
+        <div id="photoPreview"
+             class="photo-preview">
+        </div>
+
+
+        <!-- =========================
+             ATTENDANCE FORM
+             ========================= -->
+
+        <form id="attendanceForm">
+
+            <!-- Event ID -->
+
+            <input type="hidden"
+                   id="eventId"
+                   name="eventId">
+
+
+            <!-- Captured Photo -->
+
+            <input type="hidden"
+                   id="capturedPhoto"
+                   name="capturedPhoto">
+
+
+            <!-- SUBMIT ATTENDANCE -->
+
+            <button type="submit"
+                    id="submitAttendanceBtn"
+                    class="attendance-submit-main"
+                    style="display:none;">
+
+                Submit Attendance →
+
+            </button>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<script>
+
+
+/* =========================
+   PHOTO SIZE SETTINGS
+   ========================= */
+
+const MAX_PHOTO_WIDTH = 640;
+
+const PHOTO_QUALITY = 0.6;
+
+
+/* =========================
+   BACK BUTTON
+   ========================= */
+
+function goBack() {
+
+    window.location.href =
+        "my-registrations.html";
+
+}
+
+
+/* =========================
+   CAMERA ELEMENTS
+   ========================= */
+
+const video =
+    document.getElementById("cameraPreview");
+
+const canvas =
+    document.getElementById("photoCanvas");
+
+const startCameraBtn =
+    document.getElementById("startCameraBtn");
+
+const takePhotoBtn =
+    document.getElementById("takePhotoBtn");
+
+const submitAttendanceBtn =
+    document.getElementById("submitAttendanceBtn");
+
+const photoPreview =
+    document.getElementById("photoPreview");
+
+const capturedPhoto =
+    document.getElementById("capturedPhoto");
+
+const attendanceForm =
+    document.getElementById("attendanceForm");
+
+const eventIdInput =
+    document.getElementById("eventId");
+
+
+let cameraStream = null;
+
+
+/* =========================
+   GET EVENT ID FROM URL
+   ========================= */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const eventId =
+    params.get("eventId");
+
+
+if (!eventId) {
+
+    alert(
+        "Activity ID is missing."
+    );
+
+} else {
+
+    eventIdInput.value =
+        eventId;
+
+    console.log(
+        "Attendance Event ID:",
+        eventId
+    );
+
+}
+
+
+/* =========================
+   OPEN CAMERA
+   ========================= */
+
+startCameraBtn.addEventListener(
+    "click",
+    async function () {
+
+        try {
+
+            cameraStream =
+                await navigator.mediaDevices.getUserMedia({
+
+                    video: {
+                        facingMode: "user"
+                    },
+
+                    audio: false
+
+                });
+
+
+            video.srcObject =
+                cameraStream;
+
+
+            video.style.display =
+                "block";
+
+
+            startCameraBtn.style.display =
+                "none";
+
+
+            takePhotoBtn.style.display =
+                "block";
+
+
+        } catch (error) {
+
+            console.error(
+                "Camera error:",
+                error
+            );
+
+            alert(
+                "Camera access is required to submit attendance."
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================
+   TAKE LIVE PHOTO
+   ========================= */
+
+takePhotoBtn.addEventListener(
+    "click",
+    function () {
+
+        if (!cameraStream) {
+
+            alert(
+                "Please open the camera first."
+            );
+
+            return;
+
+        }
+
+
+        /* =========================
+           RESIZE PHOTO
+           ========================= */
+
+        const scale =
+            Math.min(
+                1,
+                MAX_PHOTO_WIDTH /
+                video.videoWidth
+            );
+
+
+        canvas.width =
+            Math.round(
+                video.videoWidth * scale
+            );
+
+
+        canvas.height =
+            Math.round(
+                video.videoHeight * scale
+            );
+
+
+        /* =========================
+           CAPTURE FRAME
+           ========================= */
+
+        const context =
+            canvas.getContext("2d");
+
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        /* =========================
+           CONVERT TO JPEG
+           ========================= */
+
+        const imageData =
+            canvas.toDataURL(
+                "image/jpeg",
+                PHOTO_QUALITY
+            );
+
+
+        console.log(
+            "Photo data length:",
+            imageData.length
+        );
+
+
+        /* =========================
+           SHOW PREVIEW
+           ========================= */
+
+        photoPreview.innerHTML = "";
+
+
+        const image =
+            document.createElement("img");
+
+
+        image.src =
+            imageData;
+
+
+        image.alt =
+            "Captured attendance photo";
+
+
+        photoPreview.appendChild(
+            image
+        );
+
+
+        /* =========================
+           STORE PHOTO
+           ========================= */
+
+        capturedPhoto.value =
+            imageData;
+
+
+        /* =========================
+           STOP CAMERA
+           ========================= */
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                track => track.stop()
+            );
+
+
+        cameraStream =
+            null;
+
+
+        video.srcObject =
+            null;
+
+
+        video.style.display =
+            "none";
+
+
+        takePhotoBtn.style.display =
+            "none";
+
+
+        submitAttendanceBtn.style.display =
+            "block";
+
+    }
+);
+
+
+/* =========================
+   SUBMIT ATTENDANCE
+   ========================= */
+
+attendanceForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        /*
+         * IMPORTANT:
+         * Stop the normal HTML form submission.
+         */
+
+        event.preventDefault();
+
+
+        /* =========================
+           GET VALUES
+           ========================= */
+
+        const finalEventId =
+            eventIdInput.value;
+
+
+        const finalPhoto =
+            capturedPhoto.value;
+
+
+        console.log(
+            "Event ID:",
+            finalEventId
+        );
+
+
+        console.log(
+            "Photo length:",
+            finalPhoto.length
+        );
+
+
+        /* =========================
+           VALIDATE EVENT ID
+           ========================= */
+
+        if (!finalEventId) {
+
+            alert(
+                "Activity ID is missing."
+            );
+
+            return;
+
+        }
+
+
+        /* =========================
+           VALIDATE PHOTO
+           ========================= */
+
+        if (!finalPhoto) {
+
+            alert(
+                "Please take a live photo before submitting attendance."
+            );
+
+            return;
+
+        }
+
+
+        /* =========================
+           DIRECT SERVLET URL
+           ========================= */
+
+        const servletUrl =
+            "submitAttendance/"
+            + encodeURIComponent(
+                finalEventId
+            );
+
+
+        console.log(
+            "Sending attendance to:",
+            servletUrl
+        );
+
+
+        /* =========================
+           CREATE POST DATA
+           ========================= */
+
+        const formData =
+            new URLSearchParams();
+
+
+        formData.append(
+            "capturedPhoto",
+            finalPhoto
+        );
+
+
+        /* =========================
+           SEND TO SERVLET
+           ========================= */
+
+        try {
+
+            submitAttendanceBtn.disabled =
+                true;
+
+
+            submitAttendanceBtn.innerText =
+                "Submitting...";
+
+
+            const response =
+                await fetch(
+                    servletUrl,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+                        },
+
+                        body: formData
+                    }
+                );
+
+
+            const result =
+    await response.text();
+
+console.log(
+    "Server response:",
+    result
+);
+
+if (response.ok) {
+
+    alert(
+        "Attendance submitted successfully!"
+    );
+
+    window.location.href =
+        "my-registrations.html";
+
+} else {
+
+    alert(
+        "Unable to submit attendance. Please try again."
+    );
+
+    submitAttendanceBtn.disabled =
+        false;
+
+    submitAttendanceBtn.innerText =
+        "Submit Attendance →";
+}
+
+
+        } catch (error) {
+
+            console.error(
+                "Attendance submission error:",
+                error
+            );
+
+
+            submitAttendanceBtn.disabled =
+                false;
+
+
+            submitAttendanceBtn.innerText =
+                "Submit Attendance →";
+
+
+            alert(
+                "Unable to submit attendance. Please try again."
+            );
+
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>

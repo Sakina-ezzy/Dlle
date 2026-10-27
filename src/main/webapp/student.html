@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Background watermark -->
+    <div class="watermark">
+        <img src="images/dlle-logo.png" alt="">
+    </div>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="logo-area">
+            <img src="images/dlle-logo.png" alt="DLLE logo" class="nav-logo">
+
+            <div>
+                <h2>DLLE Activity Hub</h2>
+                <p>Ghanshyamdas Saraf College</p>
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back
+        </button>
+    </header>
+
+
+    <!-- Student Page -->
+    <main class="student-page">
+
+        <section class="student-hero">
+
+            <div class="student-badge">
+                STUDENT SPACE
+            </div>
+
+            <h1>
+                Welcome to your
+                <span>DLLE journey.</span>
+            </h1>
+
+            <p>
+                Register for activities, keep track of your hours,
+                and build your participation record — all in one place.
+            </p>
+
+        </section>
+
+
+        <!-- Student Choices -->
+        <section class="choice-container">
+
+            <div class="choice-card" onclick="openStudentLogin()">
+
+                <div class="choice-icon">
+                    🎓
+                </div>
+
+                <div>
+                    <h3>Student Login</h3>
+
+                    <p>
+                        Already have an account?
+                        Login to continue your DLLE journey.
+                    </p>
+                </div>
+
+                <div class="arrow">→</div>
+
+            </div>
+
+
+            <div class="choice-card" onclick="openStudentSignup()">
+
+                <div class="choice-icon">
+                    ✦
+                </div>
+
+                <div>
+                    <h3>Create Account</h3>
+
+                    <p>
+                        New to DLLE?
+                        Create your student account to get started.
+                    </p>
+                </div>
+
+                <div class="arrow">→</div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Hours Section -->
+        <div class="hours-highlight">
+
+            <div class="hours-number">
+                120
+            </div>
+
+            <div>
+                <strong>DLLE Hours Journey</strong>
+
+                <p>
+                    Every activity, every hour,
+                    every contribution counts.
+                </p>
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+    function goBack() {
+        window.location.href = "index.html";
+    }
+
+    function openStudentLogin() {
+        window.location.href = "student-login.html";
+    }
+
+    function openStudentSignup() {
+        window.location.href = "student-signup.html";
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Background Watermark -->
+    <div class="watermark">
+        <img src="images/dlle-logo.png" alt="">
+    </div>
+
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo-area">
+
+            <img src="images/dlle-logo.png"
+                 alt="DLLE logo"
+                 class="nav-logo">
+
+            <div>
+                <h2>DLLE Activity Hub</h2>
+                <p>Ghanshyamdas Saraf College</p>
+            </div>
+
+        </div>
+
+        <button class="back-btn" onclick="logout()">
+            Logout
+        </button>
+
+    </header>
+
+
+    <!-- Dashboard -->
+    <main class="dashboard-page">
+
+        <!-- Welcome -->
+        <section class="dashboard-header">
+
+            <div>
+                <div class="student-badge">
+                    STUDENT DASHBOARD
+                </div>
+
+                <h1>
+                    Welcome back,
+                    <span id="studentName">Student.</span>
+                </h1>
+
+                <p>
+                    Your DLLE journey, activities and hours —
+                    all in one place.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- Student Information -->
+        <section class="student-info-card">
+
+            <div class="info-item">
+                <span>Student ID</span>
+                <strong id="studentId">—</strong>
+            </div>
+
+            <div class="info-item">
+                <span>Roll Number</span>
+                <strong id="rollNo">—</strong>
+            </div>
+
+            <div class="info-item">
+                <span>Academic Year</span>
+                <strong id="studentYear">—</strong>
+            </div>
+
+            <div class="info-item">
+                <span>Stream</span>
+                <strong>IT</strong>
+            </div>
+
+        </section>
+
+
+        <!-- Hours Progress -->
+        <section class="hours-card">
+
+            <div class="hours-content">
+
+                <div class="hours-text">
+
+                    <div class="student-badge">
+                        DLLE PROGRESS
+                    </div>
+
+                    <h2>
+                        Your 120-hour
+                        <span>journey.</span>
+                    </h2>
+
+                    <p>
+                        Every activity you complete brings you
+                        one step closer to your DLLE target.
+                    </p>
+
+                </div>
+
+
+                <div class="progress-circle">
+
+                    <div class="progress-inner">
+
+                        <strong id="hoursCompleted">
+                            0
+                        </strong>
+
+                        <span>
+                            / 120 hrs
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Progress Bar -->
+            <div class="progress-section">
+
+                <div class="progress-label">
+                    <span>Hours completed</span>
+                    <strong id="progressPercent">0%</strong>
+                </div>
+
+                <div class="progress-bar">
+                    <div
+                        class="progress-fill"
+                        id="progressFill">
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Dashboard Options -->
+        <section class="dashboard-options">
+
+          <div class="dashboard-card" onclick="openActivities()">
+
+                <div class="dashboard-icon">
+                    ✦
+                </div>
+
+                <div>
+                    <h3>Available Activities</h3>
+
+                    <p>
+                        Explore DLLE activities and
+                        register for the ones you want to join.
+                    </p>
+                </div>
+
+                <div class="dashboard-arrow">
+                    →
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card" onclick="openRegistrations()">
+
+                <div class="dashboard-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <h3>My Registrations</h3>
+
+                    <p>
+                        View the activities you have
+                        registered for.
+                    </p>
+                </div>
+
+                <div class="dashboard-arrow">
+                    →
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card" onclick="openAttendance()">
+
+                <div class="dashboard-icon">
+                    ◷
+                </div>
+
+                <div>
+                    <h3>My Attendance</h3>
+
+                    <p>
+                        View your completed activities
+                        and hours awarded.
+                    </p>
+                </div>
+
+                <div class="dashboard-arrow">
+                    →
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+<script>
+
+fetch("studentDetails")
+    .then(response => response.json())
+    .then(student => {
+
+        document.getElementById("studentName").textContent =
+            student.name;
+
+        document.getElementById("studentId").textContent =
+            student.studentId;
+
+        document.getElementById("rollNo").textContent =
+            student.rollNo;
+
+        document.getElementById("studentYear").textContent =
+            student.year;
+
+    })
+    .catch(error => {
+        console.error(
+            "Could not load student details:",
+            error
+        );
+    });
+
+
+/* Load DLLE progress */
+
+fetch("studentProgress")
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load student progress."
+            );
+        }
+
+        return response.json();
+
+    })
+    .then(progress => {
+
+        const completedHours =
+            progress.hours;
+
+        const percentage =
+            progress.percentage;
+
+
+        document.getElementById(
+            "hoursCompleted"
+        ).textContent =
+            completedHours;
+
+
+        document.getElementById(
+            "progressPercent"
+        ).textContent =
+            percentage + "%";
+
+
+        document.getElementById(
+            "progressFill"
+        ).style.width =
+            percentage + "%";
+
+    })
+    .catch(error => {
+
+        console.error(
+            "Could not load student progress:",
+            error
+        );
+
+    });
+
+
+function openActivities() {
+    window.location.href =
+        "available-activities.html";
+}
+
+
+function logout() {
+    window.location.href =
+        "student-login.html";
+}
+
+
+function openRegistrations() {
+    window.location.href =
+        "my-registrations.html";
+}
+
+
+function openAttendance() {
+    window.location.href =
+        "my-attendance.html";
+}
+
+</script>
+
+</body>
+</html>

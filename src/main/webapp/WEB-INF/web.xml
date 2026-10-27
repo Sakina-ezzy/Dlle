@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app
+    version="6.0"
+    xmlns="https://jakarta.ee/xml/ns/jakartaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://jakarta.ee/xml/ns/jakartaee
+        https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+
+    <servlet>
+        <servlet-name>TestDBServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TestDBServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>StudentSignupServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.StudentSignupServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>StudentDetailsServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.StudentDetailsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>RegisterEventServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.RegisterEventServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AvailableActivitiesServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.AvailableActivitiesServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MyRegistrationsServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.MyRegistrationsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SubmitAttendanceServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.SubmitAttendanceServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MyAttendanceServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.MyAttendanceServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>StudentProgressServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.StudentProgressServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TeacherLoginServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TeacherLoginServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TeacherDashboardStatsServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TeacherDashboardStatsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TeacherActivitiesServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TeacherActivitiesServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CreateEventServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.CreateEventServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ToggleAttendanceServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.ToggleAttendanceServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TeacherRegistrationsServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TeacherRegistrationsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ArchiveEventServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.ArchiveEventServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TeacherArchivedActivitiesServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TeacherArchivedActivitiesServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>RestoreEventServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.RestoreEventServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TeacherAttendanceServlet</servlet-name>
+        <servlet-class>com.mycompany.dlle.TeacherAttendanceServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+    <servlet-name>AttendancePhotoServlet</servlet-name>
+    <servlet-class>com.mycompany.dlle.AttendancePhotoServlet</servlet-class>
+</servlet>
+
+
+    <servlet-mapping>
+        <servlet-name>TestDBServlet</servlet-name>
+        <url-pattern>/TestDBServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>StudentSignupServlet</servlet-name>
+        <url-pattern>/StudentSignupServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>StudentDetailsServlet</servlet-name>
+        <url-pattern>/StudentDetailsServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RegisterEventServlet</servlet-name>
+        <url-pattern>/RegisterEventServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AvailableActivitiesServlet</servlet-name>
+        <url-pattern>/AvailableActivitiesServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MyRegistrationsServlet</servlet-name>
+        <url-pattern>/MyRegistrationsServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SubmitAttendanceServlet</servlet-name>
+        <url-pattern>/SubmitAttendanceServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MyAttendanceServlet</servlet-name>
+        <url-pattern>/MyAttendanceServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>StudentProgressServlet</servlet-name>
+        <url-pattern>/StudentProgressServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TeacherLoginServlet</servlet-name>
+        <url-pattern>/TeacherLoginServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TeacherDashboardStatsServlet</servlet-name>
+        <url-pattern>/TeacherDashboardStatsServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TeacherActivitiesServlet</servlet-name>
+        <url-pattern>/TeacherActivitiesServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CreateEventServlet</servlet-name>
+        <url-pattern>/CreateEventServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ToggleAttendanceServlet</servlet-name>
+        <url-pattern>/ToggleAttendanceServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TeacherRegistrationsServlet</servlet-name>
+        <url-pattern>/TeacherRegistrationsServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ArchiveEventServlet</servlet-name>
+        <url-pattern>/ArchiveEventServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TeacherArchivedActivitiesServlet</servlet-name>
+        <url-pattern>/TeacherArchivedActivitiesServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RestoreEventServlet</servlet-name>
+        <url-pattern>/RestoreEventServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TeacherAttendanceServlet</servlet-name>
+        <url-pattern>/TeacherAttendanceServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+    <servlet-name>AttendancePhotoServlet</servlet-name>
+    <url-pattern>/attendancePhoto</url-pattern>
+</servlet-mapping>
+
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+</web-app>

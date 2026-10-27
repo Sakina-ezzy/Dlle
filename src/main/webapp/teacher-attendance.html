@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance Records | Teacher | DLLE Activity Hub</title>
+
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body>
+
+<div class="watermark">
+    <img src="images/dlle-logo.png" alt="">
+</div>
+
+<header class="navbar">
+
+    <div class="logo-area">
+
+        <img src="images/dlle-logo.png"
+             alt="DLLE logo"
+             class="nav-logo">
+
+        <div>
+            <h2>DLLE Activity Hub</h2>
+            <p>Ghanshyamdas Saraf College</p>
+        </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goDashboard()">
+        ← Dashboard
+    </button>
+
+</header>
+
+<main class="teacher-records-page">
+
+    <section class="teacher-page-header">
+
+        <div class="student-badge">
+            TEACHER SPACE
+        </div>
+
+        <h1>Attendance Records</h1>
+
+        <p>
+            View students who attended each DLLE activity.
+        </p>
+
+    </section>
+
+    <section class="teacher-record-filters">
+
+        <div class="teacher-filter-group">
+
+            <label for="activityFilter">
+                Activity
+            </label>
+
+            <select id="activityFilter">
+                <option value="">
+                    Select Activity
+                </option>
+            </select>
+
+        </div>
+
+        <div class="teacher-filter-group">
+
+            <label for="yearFilter">
+                Academic Year
+            </label>
+
+            <select id="yearFilter">
+
+                <option value="ALL">
+                    All Years
+                </option>
+
+                <option value="FY">
+                    FY
+                </option>
+
+                <option value="SY">
+                    SY
+                </option>
+
+                <option value="TY">
+                    TY
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="teacher-inline-stat">
+
+            <span id="attendanceCount">
+                0
+            </span>
+
+            <p>
+                Total Attended
+            </p>
+
+        </div>
+
+    </section>
+
+    <section class="teacher-record-table-section">
+
+        <div id="attendanceTableContainer">
+
+            <div class="teacher-empty">
+
+                <h3>
+                    Select an activity
+                </h3>
+
+                <p>
+                    Choose an activity above to view its attendance records.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================================
+     ATTENDANCE PHOTO POPUP
+================================ -->
+
+<div id="photoPopup"
+     class="teacher-photo-popup"
+     style="display:none;">
+
+    <div class="teacher-photo-popup-box">
+
+        <button
+            type="button"
+            class="teacher-photo-close"
+            onclick="closePhotoPopup()">
+            ×
+        </button>
+
+        <div class="teacher-photo-popup-header">
+
+            <h2>
+                Attendance Photo
+            </h2>
+
+            <p>
+                Photo submitted by the student
+            </p>
+
+        </div>
+
+        <div class="teacher-photo-preview">
+
+            <img
+                id="attendancePhotoPreview"
+                src=""
+                alt="Attendance photo">
+
+        </div>
+
+        <div class="teacher-photo-actions">
+
+            <a
+                id="viewPhotoLink"
+                href="#"
+                target="_blank"
+                class="teacher-photo-action-btn">
+                View Photo
+            </a>
+
+            <a
+                id="downloadPhotoLink"
+                href="#"
+                class="teacher-photo-action-btn">
+                Download Photo
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function goDashboard() {
+
+    window.location.href =
+        "teacher-dashboard.html";
+
+}
+
+
+function loadActivities() {
+
+    fetch("teacherActivities")
+
+        .then(function(response) {
+
+            return response.json();
+
+        })
+
+        .then(function(data) {
+
+            const select =
+                document.getElementById(
+                    "activityFilter"
+                );
+
+            if (data.status !== "SUCCESS") {
+                return;
+            }
+
+            const urlParams =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            const selectedEventId =
+                urlParams.get("eventId");
+
+            data.activities.forEach(
+                function(activity) {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value =
+                        activity.eventId;
+
+                    option.textContent =
+                        activity.title;
+
+                    select.appendChild(option);
+
+                }
+            );
+
+            if (selectedEventId) {
+
+                select.value =
+                    selectedEventId;
+
+                loadAttendance();
+
+            }
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Error loading activities:",
+                error
+            );
+
+        });
+
+}
+
+
+function loadAttendance() {
+
+    const eventId =
+        document.getElementById(
+            "activityFilter"
+        ).value;
+
+    const year =
+        document.getElementById(
+            "yearFilter"
+        ).value;
+
+    const container =
+        document.getElementById(
+            "attendanceTableContainer"
+        );
+
+    const count =
+        document.getElementById(
+            "attendanceCount"
+        );
+
+
+    if (!eventId) {
+
+        count.textContent = "0";
+
+        container.innerHTML = `
+            <div class="teacher-empty">
+
+                <h3>
+                    Select an activity
+                </h3>
+
+                <p>
+                    Choose an activity above to view its attendance records.
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+        <div class="teacher-loading">
+            Loading attendance records...
+        </div>
+    `;
+
+
+    fetch(
+        "teacherAttendance?eventId=" +
+        encodeURIComponent(eventId) +
+        "&year=" +
+        encodeURIComponent(year)
+    )
+
+        .then(function(response) {
+
+            return response.json();
+
+        })
+
+        .then(function(data) {
+
+            if (data.status !== "SUCCESS") {
+
+                count.textContent = "0";
+
+                container.innerHTML = `
+                    <div class="teacher-empty">
+
+                        <h3>
+                            Unable to load records
+                        </h3>
+
+                        <p>
+                            Please try again.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            count.textContent =
+                data.total;
+
+
+            if (
+                !data.attendance ||
+                data.attendance.length === 0
+            ) {
+
+                container.innerHTML = `
+                    <div class="teacher-empty">
+
+                        <h3>
+                            No attendance records
+                        </h3>
+
+                        <p>
+                            No students have submitted attendance for this activity yet.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            let html = `
+                <div class="teacher-table-wrapper">
+
+                    <table class="teacher-record-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Student Name
+                                </th>
+
+                                <th>
+                                    Student ID
+                                </th>
+
+                                <th>
+                                    Stream
+                                </th>
+
+                                <th>
+                                    Year
+                                </th>
+
+                                <th>
+                                    Attendance Time
+                                </th>
+
+                                <th>
+                                    Photo
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+            `;
+
+
+            data.attendance.forEach(
+                function(record) {
+
+                    html += `
+                        <tr>
+
+                            <td>
+                                ${record.studentName}
+                            </td>
+
+                            <td>
+                                ${record.studentId}
+                            </td>
+
+                            <td>
+                                ${record.stream}
+                            </td>
+
+                            <td>
+                                ${record.year}
+                            </td>
+
+                            <td>
+                                ${record.attendanceTime}
+                            </td>
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="teacher-photo-btn"
+                                    onclick="viewPhoto(${record.attendanceId})">
+
+                                    📷 View Photo
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            );
+
+
+            html += `
+                        </tbody>
+
+                    </table>
+
+                </div>
+            `;
+
+
+            container.innerHTML =
+                html;
+
+        })
+
+        .catch(function(error) {
+
+            console.error(
+                "Error loading attendance:",
+                error
+            );
+
+            count.textContent = "0";
+
+            container.innerHTML = `
+                <div class="teacher-empty">
+
+                    <h3>
+                        Something went wrong
+                    </h3>
+
+                    <p>
+                        Unable to load attendance records.
+                    </p>
+
+                </div>
+            `;
+
+        });
+
+}
+
+
+/* ================================
+   PHOTO VIEWER
+================================ */
+
+function viewPhoto(attendanceId) {
+
+    const photoUrl =
+        "attendancePhoto?attendanceId=" +
+        encodeURIComponent(attendanceId);
+
+    const downloadUrl =
+        "attendancePhoto?attendanceId=" +
+        encodeURIComponent(attendanceId) +
+        "&download=true";
+
+
+    document.getElementById(
+        "attendancePhotoPreview"
+    ).src = photoUrl;
+
+
+    document.getElementById(
+        "viewPhotoLink"
+    ).href = photoUrl;
+
+
+    document.getElementById(
+        "downloadPhotoLink"
+    ).href = downloadUrl;
+
+
+    document.getElementById(
+        "photoPopup"
+    ).style.display = "flex";
+
+}
+
+
+function closePhotoPopup() {
+
+    const popup =
+        document.getElementById(
+            "photoPopup"
+        );
+
+    const image =
+        document.getElementById(
+            "attendancePhotoPreview"
+        );
+
+
+    image.src = "";
+
+    popup.style.display = "none";
+
+}
+
+
+/* Close popup if teacher clicks outside the box */
+
+document.getElementById(
+    "photoPopup"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target ===
+            this
+        ) {
+
+            closePhotoPopup();
+
+        }
+
+    }
+);
+
+
+document.getElementById(
+    "activityFilter"
+).addEventListener(
+    "change",
+    loadAttendance
+);
+
+
+document.getElementById(
+    "yearFilter"
+).addEventListener(
+    "change",
+    loadAttendance
+);
+
+
+loadActivities();
+
+</script>
+
+</body>
+</html>
